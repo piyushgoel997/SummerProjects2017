@@ -1,0 +1,22 @@
+import pandas as pd
+am = pd.read_csv(r"C:\Users\Piyush.CPU223\Desktop\am.csv")
+data = pd.read_csv(r"C:\Users\Piyush.CPU223\Desktop\alarms.csv")
+data = data.replace(to_replace=list(am.ALARM_DESC),value=list(am.ALARM_ID))
+data.to_csv('out.csv')
+
+
+
+import pandas as pd
+import datetime as dt
+alarms = pd.read_csv(r"C:\Users\Piyush.CPU223\Desktop\alarms.csv")
+tt = pd.read_csv(r"C:\Users\Piyush.CPU223\Desktop\tt.csv",usecols=["SITE_ID","TIME"])
+
+tt["TIME"] = pd.to_datetime(tt["TIME"],format= "%m/%d/%Y %H:%M")
+alarms["ALARM_START_TIME"] = pd.to_datetime(alarms["ALARM_START_TIME"],format= "%m/%d/%Y %H:%M")
+
+il = []
+for i in range(457):
+    il = il + list(alarms[((alarms.SITE_ID==tt.loc[i]["SITE_ID"]) & (alarms.ALARM_START_TIME - tt.loc[i]["TIME"] == dt.timedelta()) )].index.values)
+
+alarms = alarms.drop(alarms.index[il])
+alarms.to_csv('out.csv')
